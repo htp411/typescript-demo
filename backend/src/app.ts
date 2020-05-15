@@ -1,10 +1,13 @@
 import createError, { HttpError } from 'http-errors'
 import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express'
 import cookieParser from 'cookie-parser'
+import cookieSession from 'cookie-session'
 import logger from 'morgan'
-
-// import indexRouter from './routes/index'
-// import usersRouter from './routes/users'
+import './controller/loginController'
+import './controller/crollerController'
+import { router } from './routes'
+import { getResult } from './utils/result'
+import Config from './config/config'
 
 const app = express()
 
@@ -16,13 +19,15 @@ app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-
-app.get('/', (req, res) => {
-  res.send('hello express')
-})
-// app.use('/', indexRouter)
-// app.use('/users', usersRouter)
-
+app.use(
+  cookieSession({
+    name: 'session',
+    // 是个数组 每一次请求会循环去一个数值进行加密
+    keys: Config.SESSION_KEYS,
+    maxAge: 1000 * 60 * 60 * 24,
+  })
+)
+app.use(router)
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
   next(createError(404))
@@ -36,7 +41,7 @@ app.use(function (err: HttpError, req: Request, res: Response, next: NextFunctio
 
   // render the error page
   res.status(err.status || 500)
-  res.render('error')
+  res.send(getResult(null, 'error'))
 })
 
 export default app

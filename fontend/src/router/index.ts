@@ -4,6 +4,18 @@ import VueRouter, { RouteConfig } from 'vue-router'
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
+  {
+    path: '/',
+    name: 'Home',
+    meta: { title: '首页' },
+    component: () => import('../views/Home/index.vue'),
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    meta: { title: '用户登录' },
+    component: () => import('../views/Login/index.vue'),
+  },
   // {
   //   // path: '/',
   //   // name: 'Home',

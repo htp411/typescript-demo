@@ -2,25 +2,61 @@
   <section>
     <form rol="form">
       <div class="form-row">
-        <input name="password" id="password" type="password" autocomplete="off" placeholder="输入密码" />
+        <input
+          name="password"
+          id="password"
+          type="password"
+          autocomplete="off"
+          placeholder="输入密码"
+          v-model="password"
+        />
       </div>
       <div class="form-row remenber">
-        <div class="check-box">
-          <i class="check-icon" />
+        <div class="check-box cursor-point" @click="handleRemenber">
+          <i class="check-icon" v-show="isRemenber" />
         </div>
         <span>记住我</span>
-        <span class="foget-pass">忘记密码</span>
+        <span class="foget-pass cursor-point" @click="handleforgetPass"
+          >忘记密码</span
+        >
       </div>
       <div class="form-row submit">
-        <button type="submit">登录</button>
+        <button type="submit" class="cursor-point" @click.prevent="handleLogin">
+          登录
+        </button>
       </div>
-      <p>没有账号？立即注册</p>
+      <p class="cursor-point">没有账号？立即注册</p>
     </form>
   </section>
 </template>
 
 <script>
-export default {}
+import { login } from '@/api/login'
+export default {
+  name: 'login',
+  data() {
+    return {
+      password: '',
+      isRemenber: false
+    }
+  },
+  methods: {
+    handleLogin() {
+      console.log(this.password, this.isRemenber)
+      login(this.password, this.isRemenber).then(res => console.log(res))
+    },
+    handleRemenber() {
+      this.isRemenber = !this.isRemenber
+    },
+    handleforgetPass(event) {
+      event.target.innerText = '密码：123456'
+      const timer = setTimeout(() => {
+        event.target.innerText = '忘记密码'
+        if (timer) clearTimeout(timer)
+      }, 2000)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -67,6 +103,9 @@ section {
             flex: 1;
             text-align: right;
             color: #a0a0a0;
+            &:hover {
+              color: #666;
+            }
           }
         }
       }
@@ -91,6 +130,7 @@ section {
         border-radius: 5px;
         width: 100%;
         height: 40px;
+        outline: none;
         &:hover {
           background-color: #53c48a;
         }
@@ -99,6 +139,9 @@ section {
     p {
       color: #a0a0a0;
       text-align: center;
+      &:hover {
+        color: #666;
+      }
     }
   }
 }

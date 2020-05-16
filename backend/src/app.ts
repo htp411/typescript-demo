@@ -27,6 +27,12 @@ app.use(
     maxAge: 1000 * 60 * 60 * 24,
   })
 )
+app.use(function (req: Request, res: Response, next: NextFunction) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'content-type')
+  res.header('Access-Control-Allow-Methods', 'DELETE,PUT,POST,GET,OPTIONS')
+  next()
+})
 app.use(router)
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {

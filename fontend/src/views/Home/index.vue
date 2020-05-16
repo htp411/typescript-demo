@@ -43,6 +43,7 @@ article {
         color: #666;
         &::after {
           display: inline-block;
+          //
           content: '/';
           margin-left: 20px;
         }

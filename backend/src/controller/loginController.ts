@@ -12,16 +12,15 @@ export class LoginController {
   @post('/login')
   login(req: RequestBody, res: Response) {
     const { password } = req.body
+    console.log(req.body)
     const isLogin = !!(req.session ? req.session.login : undefined)
     if (isLogin) {
       res.send('已登录')
     } else {
-      if (password === '123456') {
+      console.log(password)
+      if (password === 'e10adc3949ba59abbe56e057f20f883e') {
         req.session ? (req.session.login = true) : ''
-        res.send(`
-          <a href="/getdata">抓取数据</a>
-          <a href="/showdata">查看数据</a>
-        `)
+        res.send(getResult(null))
       } else {
         res.json(getResult(null, 'password error'))
       }

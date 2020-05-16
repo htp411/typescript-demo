@@ -19,14 +19,14 @@ export default {
   name: 'swiperCarrousel',
   components: {
     Swiper,
-    SwiperSlide,
+    SwiperSlide
   },
   data() {
     return {
       banners: [
         'http://wxalbum-10001658.image.myqcloud.com//wxalbum/88983/20200515231440/5aea4add530c3770417a7a1d94652960.jpg',
         'http://wxalbum-10001658.image.myqcloud.com//wxalbum/88983/20200515231432/91c7af111b30595d01ef1c4c2fe1c46d.jpg',
-        'http://wxalbum-10001658.image.myqcloud.com//wxalbum/88983/20200515231436/a739c65048768c993c01aa41d0edf9b1.jpg',
+        'http://wxalbum-10001658.image.myqcloud.com//wxalbum/88983/20200515231436/a739c65048768c993c01aa41d0edf9b1.jpg'
       ],
       swiperOptions: {
         speed: 1000,
@@ -34,20 +34,20 @@ export default {
         loop: true,
         autoplay: true,
         pagination: {
-          el: '.swiper-pagination',
-        },
+          el: '.swiper-pagination'
+        }
         // Some Swiper option/callback...
-      },
+      }
     }
   },
   computed: {
     swiper() {
       return this.$refs.swiper.$swiper
-    },
+    }
   },
   moubted() {
     this.swiper.slideTo(3, 1000, false)
-  },
+  }
 }
 </script>
 <style lang="scss" scoped>

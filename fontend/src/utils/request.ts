@@ -2,7 +2,6 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import qs from 'querystring'
 import store from '@/store'
 import { getToken } from './auth'
-console.log('process.env.VUE_APP_BASE_API', process.env.VUE_APP_BASE_API)
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000,
@@ -13,7 +12,7 @@ const service = axios.create({
 service.interceptors.request.use(
   (config): AxiosRequestConfig => {
     config.data = qs.stringify(config.data)
-    if (store.getters.token) {
+    if (store.getters.token || getToken()) {
       config.headers['Authorization'] = `Bearer ${getToken()}`
     }
     return config
@@ -28,7 +27,7 @@ service.interceptors.response.use(
     if (res.success) {
       return res
     } else {
-      return Promise.reject(new Error(res.errMsg))
+      return Promise.reject({ code: res.code, errMsg: res.errMsg })
     }
   },
   error => {

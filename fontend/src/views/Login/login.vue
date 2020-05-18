@@ -32,24 +32,40 @@
 
 <script>
 import { login } from '@/api/login'
+import { setToken } from '@/utils/auth'
 export default {
   name: 'login',
   data() {
     return {
-      password: '',
+      password: 'Aa6666',
       isRemenber: false
     }
   },
   methods: {
-    handleLogin() {
-      console.log(this.password, this.isRemenber)
-      login(this.password, this.isRemenber).then(res => console.log(res))
+    async handleLogin() {
+      if (!this.password.match(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}/)) {
+        alert('密码长度最少为6且必须包含大小写字母和下划线')
+        return
+      }
+      login(this.password, this.isRemenber)
+        .then(({ data: token }) => {
+          this.$store.commit('setToken', token)
+          this.$router.push('/')
+        })
+        .catch(err => {
+          const { code } = err
+          if (code === 401) {
+            alert('密码错误')
+          } else {
+            alert('服务器异常')
+          }
+        })
     },
     handleRemenber() {
       this.isRemenber = !this.isRemenber
     },
     handleforgetPass(event) {
-      event.target.innerText = '密码：123456'
+      event.target.innerText = '密码：Aa6666'
       const timer = setTimeout(() => {
         event.target.innerText = '忘记密码'
         if (timer) clearTimeout(timer)

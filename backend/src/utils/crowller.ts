@@ -1,7 +1,7 @@
 import superagent from 'superagent'
 import fs from 'fs'
 import path from 'path'
-import Config from '../config/config'
+import Config from '../config'
 import Analyzer from './analyzer'
 
 export default class Crowller {

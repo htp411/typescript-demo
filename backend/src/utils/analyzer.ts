@@ -9,7 +9,7 @@ interface CourseResult {
   time: number
   data: Course[]
 }
-interface Content {
+export interface Content {
   [propName: number]: Course[]
 }
 export default class Analyzer {

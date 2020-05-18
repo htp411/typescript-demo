@@ -1,13 +1,12 @@
 import createError, { HttpError } from 'http-errors'
 import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express'
 import cookieParser from 'cookie-parser'
-import cookieSession from 'cookie-session'
 import logger from 'morgan'
 import './controller/loginController'
 import './controller/crollerController'
 import { router } from './routes'
 import { getResult } from './utils/result'
-import Config from './config/config'
+import jwtAuth from './utils/auth'
 
 const app = express()
 
@@ -15,39 +14,40 @@ const app = express()
 // app.set('views', path.join(__dirname, 'views'))
 // app.set('view engine', 'jade')
 
-app.use(logger('dev'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-app.use(
-  cookieSession({
-    name: 'session',
-    // 是个数组 每一次请求会循环去一个数值进行加密
-    keys: Config.SESSION_KEYS,
-    maxAge: 1000 * 60 * 60 * 24,
+app
+  .use(logger('dev'))
+  .use(express.json())
+  .use(express.urlencoded({ extended: false }))
+  .use(cookieParser())
+  .use(function (req: Request, res: Response, next: NextFunction) {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Headers', 'content-type, authorization')
+    res.header('Access-Control-Allow-Methods', 'DELETE,PUT,POST,GET,OPTIONS')
+    if (req.method === 'OPTIONS') {
+      // console.log('预检请求')
+      res.status(200)
+      res.send('OK')
+    } else {
+      next()
+    }
   })
-)
-app.use(function (req: Request, res: Response, next: NextFunction) {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'content-type')
-  res.header('Access-Control-Allow-Methods', 'DELETE,PUT,POST,GET,OPTIONS')
-  next()
-})
-app.use(router)
-// catch 404 and forward to error handler
-app.use(function (req: Request, res: Response, next: NextFunction) {
-  next(createError(404))
-})
+  .use(jwtAuth)
+  .use(router)
+  // catch 404 and forward to error handler
 
-// error handler
-app.use(function (err: HttpError, req: Request, res: Response, next: NextFunction) {
-  // set locals, only providing error in development
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
+  .use(function (req: Request, res: Response, next: NextFunction) {
+    next(createError(404))
+  })
 
-  // render the error page
-  res.status(err.status || 500)
-  res.send(getResult(null, 'error'))
-})
+  // error handler
+  .use(function (err: HttpError, req: Request, res: Response, next: NextFunction) {
+    // set locals, only providing error in development
+    res.locals.message = err.message
+    res.locals.error = req.app.get('env') === 'development' ? err : {}
+
+    // render the error page
+    res.status(err.status || 500)
+    res.send(getResult(null, err.status, 'error'))
+  })
 
 export default app

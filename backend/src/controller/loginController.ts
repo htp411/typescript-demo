@@ -14,12 +14,17 @@ interface RequestBody extends Request {
 export class LoginController {
   @post('/login')
   login(req: RequestBody, res: Response) {
-    const { password } = req.body
+    const { password, isRemenber } = req.body
+    console.log(typeof isRemenber)
     const isLogin = !!(req.session ? req.session.login : undefined)
     if (password === 'fd84255c3ab467de784f50a097672fc0') {
-      const token = jwt.sign({ loginTime: Date.now() }, config.JWT_PRIVATE_KEY, {
-        expiresIn: config.getJwtExpireTime(),
-      })
+      const token = jwt.sign(
+        {
+          exp: isRemenber === 'false' ? Math.floor(Date.now() / 1000 + 60) : config.getJwtExpireTime(),
+          loginTime: Date.now(),
+        },
+        config.JWT_PRIVATE_KEY
+      )
       res.send(getResult(token, 0))
     } else {
       res.send(getResult(null, 401, 'password error'))

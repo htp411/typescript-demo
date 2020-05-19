@@ -4,6 +4,6 @@ export default {
   FILE_PATH: '../../data/data.json',
   TARGET_URL: 'http://www.dell-lee.com/',
   getJwtExpireTime(): number {
-    return Math.floor(Date.now() + 1000 * 60 * 60 * 24 * 3)
+    return Math.floor(Date.now() / 1000 + 60 * 60 * 24 * 7)
   },
 }

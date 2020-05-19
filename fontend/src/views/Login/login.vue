@@ -44,20 +44,41 @@ export default {
   methods: {
     async handleLogin() {
       if (!this.password.match(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}/)) {
-        alert('密码长度最少为6且必须包含大小写字母和下划线')
+        this.$notify({
+          content: '输入错误，密码密码必须包含大小写字母和数字。',
+          btn: 'x',
+          type: 'warning'
+        })
         return
       }
       login(this.password, this.isRemenber)
         .then(({ data: token }) => {
           this.$store.commit('setToken', token)
-          this.$router.push('/')
+          this.$notify({
+            content: '登录成功~',
+            btn: 'x',
+            type: 'success',
+            autoClose: 500
+          })
+          const timer = setTimeout(() => {
+            this.$router.push('/')
+            clearTimeout(timer)
+          }, 500)
         })
         .catch(err => {
           const { code } = err
           if (code === 401) {
-            alert('密码错误')
+            this.$notify({
+              content: '密码错误！',
+              btn: 'x',
+              type: 'danger'
+            })
           } else {
-            alert('服务器异常')
+            this.$notify({
+              content: err.errMsg || '服务器异常',
+              btn: 'x',
+              type: 'danger'
+            })
           }
         })
     },

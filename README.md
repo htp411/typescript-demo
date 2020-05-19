@@ -7,9 +7,9 @@ typescript 开发 Vue+Node 前后端分离,包含路由守卫、登录鉴权、e
 
 # 运行项目
 
-前端：切换到 fontend 文件夹，运行 npm run serve
+前端：切换到 fontend 录，运行 npm run serve
 
-后端：切换到 backend 文件夹，运行 npm run Dev
+后端：切换到 backend 文件夹，运行 npm run dev
 
 # 主要功能
 
@@ -21,6 +21,4 @@ echart：echarts 渲染报表
 
 路由守卫：vue 路由拦截
 
-# 缺省部分
-
-消息提示暂时还是 alert，后续补上
+自定义 notify：自定义 notify 全局注册使用

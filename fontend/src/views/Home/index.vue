@@ -31,7 +31,7 @@
   </article>
 </template>
 <script>
-import Echarts from '@/components/echarts.vue'
+import Echarts from '@/components/echarts/echarts.vue'
 import { getData, updateData } from '@/api/getData'
 import { echartOptions } from '@/utils/config'
 import { parseTime } from '@/utils/time'
@@ -45,13 +45,34 @@ export default {
       disableUpdate: false,
       echartOptions,
       isShow: false,
-      filter: '全部'
+      filter: '24'
     }
   },
   mounted() {
-    getData().then(({ data }) => {
-      this.setEchartsOption(data)
-    })
+    getData(24)
+      .then(({ data }) => {
+        this.setEchartsOption(data)
+      })
+      .catch(({ code, errMsg }) => {
+        if (code === 401) {
+          this.$notify({
+            content: '用户身份过期，即将跳转登录页~',
+            btn: 'x',
+            type: 'info',
+            autoClose: 1500
+          })
+          const timer = setTimeout(() => {
+            this.handleLogout()
+          }, 1500)
+        } else {
+          this.$notify({
+            content: errMsg || '服务器错误',
+            btn: 'x',
+            type: 'danger',
+            autoClose: 500
+          })
+        }
+      })
   },
   methods: {
     setEchartsOption(data) {
@@ -65,26 +86,51 @@ export default {
       const count = event.target.innerText
       this.isShow = false
       this.filter = count
-      getData(parseInt(count)).then(({ data }) => {
-        this.setEchartsOption(data)
-      })
+      getData(parseInt(count))
+        .then(({ data }) => {
+          this.setEchartsOption(data)
+          this.$notify({
+            content: '切换显示条数OK~',
+            btn: 'x',
+            type: 'info'
+          })
+        })
+        .catch(err => {
+          this.$notify({
+            content: err.errMsg || '操作失败!',
+            btn: 'x',
+            type: 'danger'
+          })
+        })
     },
     handleUpdate(event) {
       if (this.disableUpdate) return
       this.disableUpdate = true
       this.isShow = false
       event.target.innerText = `等待10秒`
-      this.filter = '全部'
+      this.filter = '24'
       updateData()
         .then(() => {
-          return getData()
+          return getData(24)
         })
         .then(({ data }) => {
           this.setEchartsOption(data)
+          this.$notify({
+            content: '更新成功~',
+            btn: 'x',
+            type: 'success'
+          })
+        })
+        .catch(err => {
+          this.$notify({
+            content: err.errMsg || '操作失败!',
+            btn: 'x',
+            type: 'danger'
+          })
         })
       let restTime = 9
       let interval = setInterval(() => {
-        if (restTime === 1) {
+        if (restTime < 1) {
           this.disableUpdate = false
           event.target.innerText = `更新数据`
           clearInterval(interval)
@@ -113,7 +159,7 @@ export default {
           color: colors[index]
         }
       })
-      data.forEach(({ data, time }, index) => {
+      data.forEach(({ data, time }) => {
         date.push(parseTime(new Date(+time)))
         data.forEach((d, i) => {
           series[i].data.push(d.count)
@@ -124,7 +170,15 @@ export default {
     handleLogout() {
       removeToken()
       this.$store.commit('setToken', '')
-      this.$router.push('/login')
+      this.$notify({
+        content: 'bye bye ~',
+        btn: 'x',
+        type: 'danger',
+        autoClose: 300
+      })
+      const timer = setTimeout(() => {
+        this.$router.push('/login')
+      }, 300)
     }
   }
 }
@@ -138,7 +192,7 @@ article {
   flex-direction: column;
   text-align: center;
   header {
-    margin-top: 100px;
+    margin-top: 20px;
     letter-spacing: 3px;
     h1 {
       font-size: 2rem;
@@ -147,7 +201,7 @@ article {
     ul {
       display: flex;
       justify-content: center;
-      margin-top: 30px;
+      margin-top: 20px;
       li {
         list-style: none;
         font-size: 1.25rem;
@@ -171,10 +225,10 @@ article {
       flex-direction: column;
       align-items: center;
       width: 100%;
-      margin-top: 60px;
+      margin-top: 10px;
       div {
         width: 1200px;
-        height: 700px;
+        height: 600px;
       }
       .filter {
         width: 1200px;

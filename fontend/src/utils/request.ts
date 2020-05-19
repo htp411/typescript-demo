@@ -27,11 +27,14 @@ service.interceptors.response.use(
     if (res.success) {
       return res
     } else {
+      console.log('err')
       return Promise.reject({ code: res.code, errMsg: res.errMsg })
     }
   },
   error => {
-    return Promise.reject(error)
+    const { code, errMsg } = error.response.data
+    console.log(error)
+    return Promise.reject({ code, errMsg })
   }
 )
 export default service
